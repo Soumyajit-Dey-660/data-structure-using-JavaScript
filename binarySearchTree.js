@@ -121,6 +121,77 @@ class BST {
         }
         return maxDepth(this.root);
     }
+    findMinHeight(node=this.root) {
+        // This is going to return the height of first occurance of node 
+        // (which is in either left or right subtree) where the node doesn't
+        // have 2 children.
+        if (node === null) return -1;
+        let left = this.findMinHeight(node.left);
+        let right = this.findMinHeight(node.right);
+        return left < right ? left + 1 : right + 1;
+    }
+    findMaxHeight(node=this.root) {
+        // Same logic as findMinHeight but this time we return the value
+        // which is greater
+        if (node === null) return -1;
+        let left = this.findMaxHeight(node.left);
+        let right = this.findMaxHeight(node.right);
+        return left > right ? left + 1 : right + 1;
+    }
+    isBalanced() {
+        // The absolute difference between minHeight and maxHeight should 
+        // not be greater than 1
+        return Math.abs(this.findMaxHeight() - this.findMinHeight()) <= 1;
+    }
+    inOrder() {
+        // Left, Root, Right -> returns sorted array
+        if (this.root === null) return null;
+        let result = new Array();
+        const traverseInOrder = node => {
+            node.left && traverseInOrder(node.left);
+            result.push(node.data);
+            node.right && traverseInOrder(node.right);
+        }
+        traverseInOrder(this.root);
+        return result;
+    }
+    preOrder() {
+        // Root, Left, Right
+        if (this.root === null) return null;
+        let result = new Array();
+        const traversePreOrder = node => {
+            result.push(node.data);
+            node.left && traversePreOrder(node.left);
+            node.right && traversePreOrder(node.right);
+        }
+        traversePreOrder(this.root);
+        return result;
+    }
+    postOrder() {
+        // Left, Right, Root
+        if (this.root === null) return null;
+        let result = new Array();
+        const traversePostorder = node => {
+            node.left && traversePostorder(node.left);
+            node.right && traversePostorder(node.right);
+            result.push(node.data);
+        }
+        traversePostorder(this.root);
+        return result;
+    }
+    levelOrder() {
+        let result = new Array();
+        let Q = new Array();
+        if (this.root === null) return null;
+        Q.push(this.root);
+        while(Q.length > 0) {
+            let node = Q.shift();
+            result.push(node.data);
+            if (node.left !== null) Q.push(node.left);
+            if (node.right !== null) Q.push(node.right);
+        }
+        return result;
+    }
 }
 
 const bst = new BST();
@@ -139,3 +210,14 @@ console.log(bst.search(9)); // null
 bst.remove(7);
 console.log(bst.findMax()); // 6
 console.log(bst.isPresent(3)); // true
+console.log(bst.findMaxHeight()); // 2
+console.log(bst.findMinHeight()); // 1
+console.log(bst.isBalanced()); // true
+bst.add(4);
+console.log(bst.findMaxHeight()); // 3
+console.log(bst.findMinHeight()); // 1
+console.log(bst.isBalanced()); // false
+console.log(`Inorder ${bst.inOrder()}`); // [1, 2, 3, 4, 5, 6]
+console.log(`Preorder ${bst.preOrder()}`); // [5, 2, 1, 3, 4, 6]
+console.log(`Postorder ${bst.postOrder()}`); // [1, 4, 3, 2, 6, 5]
+console.log(`Levelorder ${bst.levelOrder()}`); // [5, 2, 6, 1, 3, 4]
